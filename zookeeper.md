@@ -46,6 +46,43 @@ watcher事件:
 - 通知状态:org.apache.zookeeper.WatcherEvent.KeeperState
 - 事件类型:org.apache.zookeeper.WatcherEvent.EventType
 
+NodeDataChanged事件
+  无论节点数据发生变化还是数据版本发生变化都会触发
+  即使被更新数据与新数据一样，数据版本都会发生变化
 
+NodeChildrenChanged
+  新增节点或者删除节点
 
+AuthFailed
+  重点不是客户端会话没有权限而是授权失败
+
+> 客户端只能收到相关事件的通知，但是并不能获取到对应数据节点的原始数据以及变更后的新数据内容，因此，如果业务需要知道变更前的数据或者变更后的新数据，需要业务保存变更前的数据和调用接口获取新的数据
+
+**Watcher设置之后，一旦触发一次会失效，如果需要一直监听，就需要再注册**
+
+Acl(Access Control List)组成
+1. Secheme:id:permission
+2. Scheme:验证过程中使用的检验策略
+3. Id:权限被赋予的对象，比如ip或者某个用户
+4. Permission为权限，上面的crdwa表示5个权限组合
+5. 通过setAcl命令设置节点的权限
+6. 节点的acl不具有继承关系
+7. getAcl可以查看节点的Acl信息
+
+c-create
+r-read
+d-delete
+w-write
+a-access control
+
+Schema类型 --auth
+
+- Schema:id:permission，auth:用户名:密码:权限
+- 表示给认证通过的所有用户设置acl权限
+- 同时可以添加多个用户
+- 通过addauth进行认证用户的添加
+	addauth digest <userName>:<password>
+- auth策略的本质是digest
+- 如果通过addauth创建多组用户和密码，当使用setAcl修改权限时，所有的用户和吗密码的权限都会跟着修改
+- 通过addauth新创建的用户和密码组需要调用setAcl才会加入到权限组去
 
